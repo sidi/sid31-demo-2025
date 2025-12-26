@@ -80,6 +80,10 @@ DATABASES = {
     }
 }
 
+CSRF_TRUSTED_ORIGINS = [
+    "http://144.76.198.221:29000",
+    "https://teaching.sidi.xyz:29000",
+]
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
