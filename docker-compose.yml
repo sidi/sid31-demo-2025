@@ -14,13 +14,23 @@ services:
 
   fetcher:
     build: .
-    container_name: fetcher
+    container_name: mru_fx_scheduler
+    depends_on:
+      - web
+    volumes:
+      - ./mru_fx:/app
+    environment:
+      - DJANGO_SETTINGS_MODULE=mru_fx.settings
+      - SQLITE_PATH=/app/db.sqlite3
+      - BCM_API_BASE=https://connect.bcm.mr/api/cours_change_reference
+      - BCM_LOOKBACK_DAYS=30
+      - BCM_MAX_LOOKBACK_DAYS=365
     command: >
       sh -c "
+      python manage.py migrate &&
       while true; do
-        python /app/fetch_rates.py;
+        echo \"[scheduler] Fetching BCM rates at $(date -u)\";
+        python manage.py fetch_rates --quotes USD EUR CNY || echo \"[scheduler] fetch_rates failed\";
         sleep 86400;
       done
       "
-    volumes:
-      - ./fetcher:/app
